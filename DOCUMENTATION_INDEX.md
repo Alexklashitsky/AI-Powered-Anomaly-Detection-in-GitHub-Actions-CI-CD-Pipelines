@@ -39,6 +39,7 @@ Welcome to the AI-Powered Anomaly Detection System documentation! This index wil
 | [⚡ QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Common commands (PowerShell) | 10 min | DevOps, Daily users |
 | [🧪 TESTING_GUIDE.md](./TESTING_GUIDE.md) | Testing procedures | 45 min | QA, DevOps |
 | [📈 PROJECT_STATUS.md](./PROJECT_STATUS.md) | Status and roadmap | 10 min | Managers, Stakeholders |
+| [🔧 TERRAFORM_FIXES.md](./TERRAFORM_FIXES.md) | Deployment troubleshooting | 15 min | DevOps, Infrastructure |
 
 ### 🔬 Technical Deep Dives
 
@@ -68,10 +69,11 @@ Welcome to the AI-Powered Anomaly Detection System documentation! This index wil
 ### 🔧 DevOps Engineer
 ```
 1. README.md                   (Setup infrastructure)
-2. ARCHITECTURE_DIAGRAMS.md    (Understand architecture)
-3. QUICK_REFERENCE.md          (Operations guide)
-4. TESTING_GUIDE.md            (Validation procedures)
-5. AZURE_FUNCTION_README.md    (Function management)
+2. TERRAFORM_FIXES.md          (Deployment troubleshooting)
+3. ARCHITECTURE_DIAGRAMS.md    (Understand architecture)
+4. QUICK_REFERENCE.md          (Operations guide)
+5. TESTING_GUIDE.md            (Validation procedures)
+6. AZURE_FUNCTION_README.md    (Function management)
 ```
 
 ### 🔬 Data Scientist / ML Engineer

@@ -11,13 +11,13 @@ resource "azurerm_storage_account" "function" {
   tags = var.tags
 }
 
-# App Service Plan for Function App (Consumption plan)
+# App Service Plan for Function App (Linux Basic plan)
 resource "azurerm_service_plan" "function" {
   name                = var.function_app_service_plan_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   os_type             = "Linux"
-  sku_name            = "Y1"  # Consumption (serverless) plan
+  sku_name            = "B1"  # Basic tier (more reliable than Consumption)
   
   tags = var.tags
 }

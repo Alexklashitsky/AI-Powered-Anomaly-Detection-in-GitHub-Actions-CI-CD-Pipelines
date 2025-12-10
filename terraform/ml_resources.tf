@@ -1,11 +1,23 @@
 # Azure Machine Learning Workspace and Dependencies
 
+# Log Analytics Workspace for Application Insights
+resource "azurerm_log_analytics_workspace" "ml" {
+  name                = "${var.ml_application_insights_name}-law"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+  
+  tags = var.tags
+}
+
 # Application Insights for ML Workspace
 resource "azurerm_application_insights" "ml" {
   name                = var.ml_application_insights_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.ml.id
   
   tags = var.tags
 }

@@ -106,6 +106,16 @@ output "ml_application_insights_name" {
   value       = azurerm_application_insights.ml.name
 }
 
+output "ml_log_analytics_workspace_id" {
+  description = "ID of the Log Analytics Workspace for Application Insights"
+  value       = azurerm_log_analytics_workspace.ml.id
+}
+
+output "ml_log_analytics_workspace_name" {
+  description = "Name of the Log Analytics Workspace"
+  value       = azurerm_log_analytics_workspace.ml.name
+}
+
 # Azure Function outputs
 output "function_app_name" {
   description = "Name of the Azure Function App"
