@@ -129,16 +129,23 @@ In your GitHub repository, go to **Settings** → **Secrets and variables** → 
 
 ### Step 6: Update Terraform Variables
 
-Edit `terraform/terraform.tfvars` (create from `terraform.tfvars.example`):
+Edit `terraform/terraform.tfvars` to use globally unique names:
 
 ```hcl
-acr_name              = "yourUniqueAcrName"  # Must be globally unique, lowercase alphanumeric
-resource_group_name   = "flask-app-rg"
+# IMPORTANT: Change these to globally unique values
+acr_name         = "yourcompanyacr123"      # Lowercase alphanumeric only, globally unique
+app_service_name = "yourcompany-flask-001"  # Globally unique across all Azure
+
+# Other settings
+resource_group_name    = "flask-app-rg"
 location              = "westeurope"
-app_service_name      = "yourUniqueAppName"  # Must be globally unique
+app_service_plan_name = "flask-app-plan"
 ```
 
-**Note**: Authentication (subscription_id, client_id, tenant_id) is handled via OIDC environment variables in GitHub Actions. No client secret is needed!
+**Note**: 
+- Authentication (subscription_id, client_id, tenant_id) is handled via OIDC environment variables in GitHub Actions. No client secret is needed!
+- ACR names must be 5-50 characters, lowercase letters and numbers only
+- App Service names must be globally unique and can contain letters, numbers, and hyphens
 
 ## 📁 Project Structure
 

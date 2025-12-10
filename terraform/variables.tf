@@ -25,9 +25,9 @@ variable "app_service_plan_name" {
 }
 
 variable "app_service_name" {
-  description = "Name of the App Service"
+  description = "Name of the App Service (must be globally unique)"
   type        = string
-  default     = "flask-app-service"
+  default     = "flask-app-delek-001"
 }
 
 variable "container_image_name" {
