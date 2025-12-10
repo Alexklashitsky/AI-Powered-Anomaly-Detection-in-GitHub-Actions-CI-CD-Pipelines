@@ -1,0 +1,30 @@
+# Example terraform.tfvars file
+# Copy this file to terraform.tfvars and fill in your values
+# DO NOT commit terraform.tfvars to version control!
+
+# Azure Authentication (can also be set via environment variables)
+# subscription_id = "your-subscription-id"
+# client_id       = "your-client-id"
+# client_secret   = "your-client-secret"
+# tenant_id       = "your-tenant-id"
+
+# ACR Configuration
+acr_name           = "delekacr"
+acr_resource_group = "your-acr-resource-group-name"
+
+# Infrastructure Configuration
+resource_group_name    = "flask-app-rg"
+location               = "westeurope"
+app_service_plan_name  = "flask-app-plan"
+app_service_name       = "flask-app-service-unique-name" # Must be globally unique
+container_image_name   = "flask-app"
+container_image_tag    = "latest"
+environment            = "production"
+
+# Tags
+tags = {
+  Environment = "Production"
+  ManagedBy   = "Terraform"
+  Project     = "Flask-CI-CD"
+  Owner       = "DevOps-Team"
+}

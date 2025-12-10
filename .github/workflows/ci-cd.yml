@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_run:
+    workflows: ["Terraform Infrastructure Deployment"]
+    types:
+      - completed
+    branches:
+      - main
 
 permissions:
   id-token: write
@@ -45,6 +51,10 @@ jobs:
     name: Deploy to Azure App Service
     runs-on: ubuntu-latest
     needs: build
+    # Only run if triggered by successful Terraform deployment or manual push
+    if: |
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'push' && !contains(github.event.head_commit.modified, 'terraform/'))
     
     steps:
       - name: Checkout code
@@ -57,38 +67,80 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       
+      - name: Get Terraform Outputs
+        id: tf_outputs
+        run: |
+          cd terraform
+          
+          # Initialize Terraform to access remote state
+          terraform init \
+            -backend-config="resource_group_name=terraform-state-rg" \
+            -backend-config="storage_account_name=tfstatedevopsdelk" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=flask-app.terraform.tfstate"
+          
+          # Get outputs from Terraform state
+          APP_SERVICE_NAME=$(terraform output -raw app_service_name)
+          RESOURCE_GROUP_NAME=$(terraform output -raw resource_group_name)
+          ACR_NAME=$(terraform output -raw acr_name)
+          ACR_LOGIN_SERVER=$(terraform output -raw acr_login_server)
+          
+          # Export to GitHub outputs
+          echo "app_service_name=$APP_SERVICE_NAME" >> $GITHUB_OUTPUT
+          echo "resource_group_name=$RESOURCE_GROUP_NAME" >> $GITHUB_OUTPUT
+          echo "acr_name=$ACR_NAME" >> $GITHUB_OUTPUT
+          echo "acr_login_server=$ACR_LOGIN_SERVER" >> $GITHUB_OUTPUT
+          
+          echo "✅ Retrieved Terraform outputs:"
+          echo "  App Service: $APP_SERVICE_NAME"
+          echo "  Resource Group: $RESOURCE_GROUP_NAME"
+          echo "  ACR: $ACR_NAME"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+      
       - name: Build and push Docker image to Azure Container Registry
         run: |
-          # Replace with your ACR name
-          ACR_NAME="delekacr"
+          ACR_NAME="${{ steps.tf_outputs.outputs.acr_name }}"
+          ACR_LOGIN_SERVER="${{ steps.tf_outputs.outputs.acr_login_server }}"
           IMAGE_NAME="flask-app"
           IMAGE_TAG="${{ github.sha }}"
+          
+          echo "🐳 Building and pushing Docker image to $ACR_LOGIN_SERVER"
           
           # Login to ACR
           az acr login --name $ACR_NAME
           
           # Build and push image
-          docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
-          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:latest .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
       
       - name: Deploy to Azure App Service
         run: |
-          # Replace with your App Service name and resource group
-          APP_NAME="your-app-service-name"
-          RESOURCE_GROUP="your-resource-group"
-          ACR_NAME="your-acr-name"
+          APP_NAME="${{ steps.tf_outputs.outputs.app_service_name }}"
+          RESOURCE_GROUP="${{ steps.tf_outputs.outputs.resource_group_name }}"
+          ACR_LOGIN_SERVER="${{ steps.tf_outputs.outputs.acr_login_server }}"
           IMAGE_NAME="flask-app"
           IMAGE_TAG="${{ github.sha }}"
+          
+          echo "🚀 Deploying to App Service: $APP_NAME"
           
           # Deploy container to App Service
           az webapp config container set \
             --name $APP_NAME \
             --resource-group $RESOURCE_GROUP \
-            --docker-custom-image-name $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG \
-            --docker-registry-server-url https://$ACR_NAME.azurecr.io
+            --docker-custom-image-name $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG \
+            --docker-registry-server-url https://$ACR_LOGIN_SERVER
           
-          # Restart the app service
+          # Restart the app service to apply changes
           az webapp restart --name $APP_NAME --resource-group $RESOURCE_GROUP
+          
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 App URL: https://$(az webapp show --name $APP_NAME --resource-group $RESOURCE_GROUP --query defaultHostName -o tsv)"
       
       - name: Logout from Azure
         if: always()
