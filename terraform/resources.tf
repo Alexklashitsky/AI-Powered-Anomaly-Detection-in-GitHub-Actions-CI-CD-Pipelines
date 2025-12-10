@@ -47,6 +47,8 @@ resource "azurerm_linux_web_app" "main" {
   }
   
   # Configure ACR credentials for pulling images
+  # Using admin credentials by default (simpler, no additional permissions needed)
+  # To use managed identity instead, uncomment the azurerm_role_assignment block at the bottom
   app_settings = {
     "DOCKER_REGISTRY_SERVER_URL"      = "https://${azurerm_container_registry.acr.login_server}"
     "DOCKER_REGISTRY_SERVER_USERNAME" = azurerm_container_registry.acr.admin_username
@@ -67,8 +69,12 @@ resource "azurerm_linux_web_app" "main" {
 }
 
 # Role assignment to allow App Service to pull from ACR using managed identity
-resource "azurerm_role_assignment" "acr_pull" {
-  scope                = azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_linux_web_app.main.identity[0].principal_id
-}
+# Note: This requires the service principal to have "User Access Administrator" or "Owner" role
+# For now, we're using admin credentials (configured in app_settings above)
+# Uncomment this block if you have the necessary permissions and want to use managed identity instead
+
+# resource "azurerm_role_assignment" "acr_pull" {
+#   scope                = azurerm_container_registry.acr.id
+#   role_definition_name = "AcrPull"
+#   principal_id         = azurerm_linux_web_app.main.identity[0].principal_id
+# }

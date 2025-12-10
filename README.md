@@ -90,7 +90,16 @@ az role assignment create \
   --assignee $APP_ID \
   --role "Contributor" \
   --scope "/subscriptions/$SUBSCRIPTION_ID"
+
+# Optional: If you want to use Managed Identity for ACR pull (instead of admin credentials)
+# Assign User Access Administrator role (required for role assignments in Terraform)
+az role assignment create \
+  --assignee $APP_ID \
+  --role "User Access Administrator" \
+  --scope "/subscriptions/$SUBSCRIPTION_ID"
 ```
+
+**Note**: The Contributor role is sufficient for basic deployment. User Access Administrator is only needed if you want to enable the managed identity role assignment in `resources.tf`.
 
 ### Step 4: Create Terraform State Storage
 
@@ -268,6 +277,26 @@ Response:
 - Verify ACR was created successfully by Terraform
 - Check that admin access is enabled on ACR
 - Ensure the App Service managed identity has AcrPull role
+
+### Role Assignment Permission Error
+
+If you see: `does not have authorization to perform action 'Microsoft.Authorization/roleAssignments/write'`
+
+**Solution 1** (Recommended for quick start):
+- The role assignment is already commented out in `resources.tf`
+- App Service uses admin credentials instead (already configured)
+- This works fine for development and testing
+
+**Solution 2** (For production with managed identity):
+```bash
+# Grant User Access Administrator role
+az role assignment create \
+  --assignee $APP_ID \
+  --role "User Access Administrator" \
+  --scope "/subscriptions/$SUBSCRIPTION_ID"
+
+# Then uncomment the azurerm_role_assignment block in resources.tf
+```
 
 ### Terraform State Issues
 
