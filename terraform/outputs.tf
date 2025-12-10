@@ -105,3 +105,24 @@ output "ml_application_insights_name" {
   description = "Name of the ML Application Insights"
   value       = azurerm_application_insights.ml.name
 }
+
+# Azure Function outputs
+output "function_app_name" {
+  description = "Name of the Azure Function App"
+  value       = azurerm_linux_function_app.anomaly_detector.name
+}
+
+output "function_app_url" {
+  description = "Default hostname of the Function App"
+  value       = "https://${azurerm_linux_function_app.anomaly_detector.default_hostname}"
+}
+
+output "function_app_id" {
+  description = "ID of the Function App"
+  value       = azurerm_linux_function_app.anomaly_detector.id
+}
+
+output "function_app_principal_id" {
+  description = "Principal ID of the Function App managed identity"
+  value       = azurerm_linux_function_app.anomaly_detector.identity[0].principal_id
+}

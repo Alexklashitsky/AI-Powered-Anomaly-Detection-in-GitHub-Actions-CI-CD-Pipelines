@@ -82,3 +82,69 @@ variable "ml_application_insights_name" {
   type        = string
   default     = "ml-appinsights-anomaly"
 }
+
+# Azure Function variables
+variable "function_app_name" {
+  description = "Name of the Azure Function App"
+  type        = string
+  default     = "func-anomaly-detector"
+}
+
+variable "function_storage_account_name" {
+  description = "Name of the storage account for Function App (lowercase, alphanumeric, 3-24 chars)"
+  type        = string
+  default     = "funcstorageanomalydet"
+}
+
+variable "function_app_service_plan_name" {
+  description = "Name of the App Service Plan for Function App"
+  type        = string
+  default     = "func-plan-anomaly"
+}
+
+# Optional variables for Function App configuration
+variable "ml_endpoint_url" {
+  description = "Azure ML endpoint URL for anomaly detection"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "ml_api_key" {
+  description = "API key for Azure ML endpoint"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "teams_webhook_url" {
+  description = "Microsoft Teams webhook URL for alerts"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "log_analytics_workspace_id" {
+  description = "Log Analytics workspace ID for querying metrics"
+  type        = string
+  default     = ""
+}
+
+variable "sendgrid_api_key" {
+  description = "SendGrid API key for email alerts"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "sendgrid_from_email" {
+  description = "Email address to send alerts from"
+  type        = string
+  default     = "alerts@example.com"
+}
+
+variable "sendgrid_to_email" {
+  description = "Email address to send alerts to"
+  type        = string
+  default     = "devops@example.com"
+}

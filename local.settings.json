@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "ML_ENDPOINT_URL": "https://your-ml-endpoint.azureml.ms/score",
+    "ML_API_KEY": "your-ml-api-key",
+    "TEAMS_WEBHOOK_URL": "https://outlook.office.com/webhook/your-webhook-url",
+    "LOG_ANALYTICS_WORKSPACE_ID": "your-workspace-id",
+    "SENDGRID_API_KEY": "your-sendgrid-api-key",
+    "SENDGRID_FROM_EMAIL": "alerts@yourcompany.com",
+    "SENDGRID_TO_EMAIL": "devops-team@yourcompany.com",
+    "ML_STUDIO_URL": "https://ml.azure.com"
+  }
+}

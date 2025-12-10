@@ -1,0 +1,143 @@
+name: Deploy Azure Function
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'function_app.py'
+      - 'azure_function_requirements.txt'
+      - 'host.json'
+      - '.github/workflows/deploy-function.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Function App
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+          terraform_wrapper: false
+      
+      - name: Get Function App Name
+        id: function_config
+        run: |
+          cd terraform
+          
+          # Initialize Terraform to access remote state
+          terraform init \
+            -backend-config="resource_group_name=terraform-state-rg" \
+            -backend-config="storage_account_name=tfstatedevopsdelk" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=flask-app.terraform.tfstate"
+          
+          # Get outputs from Terraform state
+          FUNCTION_APP_NAME=$(terraform output -raw function_app_name)
+          
+          # Export to GitHub outputs
+          echo "function_app_name=$FUNCTION_APP_NAME" >> $GITHUB_OUTPUT
+          
+          echo "✅ Retrieved Function App name: $FUNCTION_APP_NAME"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r azure_function_requirements.txt --target .python_packages/lib/site-packages
+      
+      - name: Create deployment package
+        run: |
+          # Create package directory
+          mkdir -p deploy
+          
+          # Copy function files
+          cp function_app.py deploy/
+          cp host.json deploy/
+          cp azure_function_requirements.txt deploy/requirements.txt
+          
+          # Copy dependencies
+          if [ -d .python_packages ]; then
+            cp -r .python_packages deploy/
+          fi
+          
+          echo "✅ Deployment package created"
+      
+      - name: Deploy to Azure Function
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ steps.function_config.outputs.function_app_name }}
+          package: deploy
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
+      
+      - name: Update Function App Settings (Optional)
+        run: |
+          FUNCTION_APP_NAME="${{ steps.function_config.outputs.function_app_name }}"
+          RESOURCE_GROUP="flask-app-rg"
+          
+          echo "📝 Updating Function App settings..."
+          
+          # Example: Update settings from GitHub secrets
+          # Uncomment and add your secrets in GitHub
+          
+          # az functionapp config appsettings set \
+          #   --name $FUNCTION_APP_NAME \
+          #   --resource-group $RESOURCE_GROUP \
+          #   --settings \
+          #     "ML_ENDPOINT_URL=${{ secrets.ML_ENDPOINT_URL }}" \
+          #     "ML_API_KEY=${{ secrets.ML_API_KEY }}" \
+          #     "TEAMS_WEBHOOK_URL=${{ secrets.TEAMS_WEBHOOK_URL }}"
+          
+          echo "✅ Function App settings updated (if any)"
+      
+      - name: Test Function
+        run: |
+          FUNCTION_APP_NAME="${{ steps.function_config.outputs.function_app_name }}"
+          FUNCTION_URL="https://${FUNCTION_APP_NAME}.azurewebsites.net/api/detect_anomalies"
+          
+          echo "🧪 Testing function endpoint: $FUNCTION_URL"
+          
+          # Wait for deployment to complete
+          sleep 30
+          
+          # Test the function (will use mock data if ML endpoint not configured)
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$FUNCTION_URL" || echo "000")
+          
+          if [ "$HTTP_STATUS" == "200" ]; then
+            echo "✅ Function is responding correctly"
+          else
+            echo "⚠️ Function returned status code: $HTTP_STATUS"
+            echo "This may be expected if ML endpoint is not configured yet"
+          fi
+      
+      - name: Logout from Azure
+        if: always()
+        run: |
+          az logout

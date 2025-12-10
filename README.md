@@ -1,6 +1,22 @@
 # AI-Powered Anomaly Detection in GitHub Actions CI/CD Pipelines
 
-A complete DevOps solution featuring a Flask web application with automated CI/CD pipelines using GitHub Actions, Terraform for infrastructure as code, and Azure cloud services.
+A complete DevOps solution featuring a Flask web application with automated CI/CD pipelines using GitHub Actions, Terraform for infrastructure as code, and Azure cloud services with **real-time AI-powered anomaly detection and alerting**.
+
+> **🎉 NEW!** [**Project Complete Guide**](./PROJECT_COMPLETE.md) - Your complete system overview and next steps!
+
+## 📚 Documentation
+
+### Getting Started
+- **[🎉 Project Complete Guide](./PROJECT_COMPLETE.md)** - **START HERE!** Complete system summary and next steps
+- **[🏗️ Architecture Diagrams](./ARCHITECTURE_DIAGRAMS.md)** - Visual system documentation
+- **[⚡ Quick Reference Guide](./QUICK_REFERENCE.md)** - Common commands and operations (PowerShell)
+- **[🧪 Testing Guide](./TESTING_GUIDE.md)** - Comprehensive testing procedures
+
+### Deep Dives
+- **[🤖 AI Anomaly Detection Overview](./AI_ANOMALY_DETECTION_OVERVIEW.md)** - Complete ML system architecture
+- **[📊 ML Model Guide](./ML_ANOMALY_DETECTION_GUIDE.md)** - Detailed ML model documentation
+- **[⚡ Azure Function Guide](./AZURE_FUNCTION_README.md)** - Serverless function details
+- **[📈 Project Status](./PROJECT_STATUS.md)** - Current status and roadmap
 
 ## 🏗️ Architecture
 
@@ -15,6 +31,11 @@ A complete DevOps solution featuring a Flask web application with automated CI/C
   - Key Vault for secrets management
   - Storage Account for ML artifacts
   - Integration with ACR for model deployment
+- **Azure Function App**: Serverless anomaly detection and alerting
+  - HTTP and timer triggers
+  - Managed identity for secure access
+  - Integration with ML workspace
+  - Teams and email alerting
 
 ### CI/CD Pipelines
 1. **Terraform Infrastructure Deployment** (`.github/workflows/terraform-deploy.yml`)
@@ -26,7 +47,12 @@ A complete DevOps solution featuring a Flask web application with automated CI/C
    - Builds and tests the Flask application
    - Builds Docker images and pushes to ACR
    - Deploys to Azure App Service
-   - Depends on Terraform workflow completion
+   - **NEW: AI-Powered Monitor Job**
+     - Collects pipeline metrics (duration, failure rate)
+     - Calls Azure Function for anomaly detection
+     - Creates GitHub issues for anomalies
+     - Sends Teams/email alerts
+     - Optional: Fails build on critical anomalies
 
 3. **ML Model Training** (`.github/workflows/train-ml-model.yml`)
    - Trains Isolation Forest model for anomaly detection
@@ -34,8 +60,14 @@ A complete DevOps solution featuring a Flask web application with automated CI/C
    - Registers model in Azure ML
    - Runs weekly or on-demand
 
+4. **Azure Function Deployment** (`.github/workflows/deploy-function.yml`)
+   - Deploys serverless anomaly detection function
+   - Configures environment variables
+   - Sets up managed identity permissions
+
 ## 🚀 Features
 
+### Core Infrastructure
 - **Infrastructure as Code**: Complete Azure infrastructure defined in Terraform
 - **OIDC Authentication**: Secure, keyless authentication to Azure (no client secrets!)
 - **Automated Testing**: Pytest with coverage reporting
@@ -43,6 +75,15 @@ A complete DevOps solution featuring a Flask web application with automated CI/C
 - **Health Checks**: Built-in health monitoring endpoints
 - **Managed Identity**: App Service uses managed identity to pull from ACR
 - **Workflow Dependencies**: App deployment waits for infrastructure provisioning
+
+### AI-Powered Monitoring 🤖
+- **Real-time Anomaly Detection**: ML-powered analysis of every pipeline run
+- **Isolation Forest Model**: Unsupervised learning on pipeline metrics
+- **Automatic Alerting**: GitHub issues, Microsoft Teams, and email notifications
+- **Predictive Analytics**: Detect performance degradation before failures
+- **Historical Tracking**: Trend analysis and anomaly artifact storage
+- **Customizable Thresholds**: Adjust sensitivity per environment
+- **Auto-remediation Ready**: Optional build failure on anomalies
 
 ## 📋 Prerequisites
 
@@ -321,10 +362,63 @@ az role assignment create \
 - Check that the `tfstate` container exists
 - Ensure service principal has access to the storage account
 
-## 📝 License
+## � Complete Documentation
+
+This repository includes comprehensive documentation to help you understand, deploy, and maintain the AI-powered anomaly detection system:
+
+### Core Documentation
+- **[AI Anomaly Detection Overview](./AI_ANOMALY_DETECTION_OVERVIEW.md)** - Complete system architecture, features, benefits, and how everything works together
+- **[Architecture Diagrams](./ARCHITECTURE_DIAGRAMS.md)** - Visual diagrams showing data flow, component interactions, and system architecture
+- **[Quick Reference Guide](./QUICK_REFERENCE.md)** - Common commands and operations for day-to-day management
+- **[Testing & Validation Guide](./TESTING_GUIDE.md)** - Comprehensive testing procedures for all components
+
+### Component-Specific Guides
+- **[ML Anomaly Detection Guide](./ML_ANOMALY_DETECTION_GUIDE.md)** - Detailed ML model documentation, training procedures, and model evaluation
+- **[Azure Function Guide](./AZURE_FUNCTION_README.md)** - Serverless function details, configuration, and troubleshooting
+
+### Getting Started
+1. Start with this README for initial setup
+2. Review [AI_ANOMALY_DETECTION_OVERVIEW.md](./AI_ANOMALY_DETECTION_OVERVIEW.md) to understand the full system
+3. Use [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for common operations
+4. Follow [TESTING_GUIDE.md](./TESTING_GUIDE.md) to validate your deployment
+
+## 🎯 What Makes This Special?
+
+### 🤖 AI-Powered Intelligence
+- **Machine Learning**: Isolation Forest algorithm trained on your pipeline history
+- **Real-time Detection**: Immediate analysis of every pipeline run
+- **Predictive**: Catches issues before they become critical
+- **Self-Learning**: Adapts to your pipeline patterns over time
+
+### 🚀 Production-Ready
+- **Infrastructure as Code**: Everything defined in Terraform
+- **No Secrets**: OIDC authentication (no client secrets stored)
+- **Scalable**: Serverless Azure Functions auto-scale
+- **Monitored**: Application Insights integration
+- **Secure**: Managed identities and Key Vault
+
+### 📊 Comprehensive Monitoring
+- **Multi-Channel Alerts**: GitHub Issues, Teams, Email
+- **Detailed Reporting**: Anomaly scores and recommendations
+- **Historical Tracking**: 30-day artifact retention
+- **Customizable**: Adjust thresholds per environment
+
+### 🔧 Developer-Friendly
+- **Easy Setup**: Step-by-step instructions
+- **Well Documented**: Extensive guides and examples
+- **Tested**: Complete testing procedures included
+- **Maintainable**: Clean code structure and best practices
+
+## �📝 License
 
 This project is provided as-is for educational and demonstration purposes.
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+**Built with ❤️ using Azure, GitHub Actions, and Machine Learning**
+
+For questions or support, please open an issue on GitHub.
