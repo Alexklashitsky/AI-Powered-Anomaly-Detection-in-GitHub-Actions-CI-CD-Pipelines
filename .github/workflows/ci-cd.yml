@@ -60,7 +60,7 @@ jobs:
       - name: Build and push Docker image to Azure Container Registry
         run: |
           # Replace with your ACR name
-          ACR_NAME="your-acr-name"
+          ACR_NAME="delekacr"
           IMAGE_NAME="flask-app"
           IMAGE_TAG="${{ github.sha }}"
           
