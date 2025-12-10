@@ -132,11 +132,13 @@ In your GitHub repository, go to **Settings** → **Secrets and variables** → 
 Edit `terraform/terraform.tfvars` (create from `terraform.tfvars.example`):
 
 ```hcl
-acr_name              = "yourUniqueAcrName"  # Must be globally unique
+acr_name              = "yourUniqueAcrName"  # Must be globally unique, lowercase alphanumeric
 resource_group_name   = "flask-app-rg"
 location              = "westeurope"
 app_service_name      = "yourUniqueAppName"  # Must be globally unique
 ```
+
+**Note**: Authentication (subscription_id, client_id, tenant_id) is handled via OIDC environment variables in GitHub Actions. No client secret is needed!
 
 ## 📁 Project Structure
 
