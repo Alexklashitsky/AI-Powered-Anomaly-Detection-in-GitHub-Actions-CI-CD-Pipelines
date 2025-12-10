@@ -74,3 +74,34 @@ output "app_service_tenant_id" {
   description = "Tenant ID of the App Service managed identity"
   value       = azurerm_linux_web_app.main.identity[0].tenant_id
 }
+
+# Azure ML outputs
+output "ml_workspace_id" {
+  description = "ID of the Azure ML workspace"
+  value       = azurerm_machine_learning_workspace.main.id
+}
+
+output "ml_workspace_name" {
+  description = "Name of the Azure ML workspace"
+  value       = azurerm_machine_learning_workspace.main.name
+}
+
+output "ml_workspace_discovery_url" {
+  description = "Discovery URL of the Azure ML workspace"
+  value       = azurerm_machine_learning_workspace.main.discovery_url
+}
+
+output "ml_storage_account_name" {
+  description = "Name of the ML storage account"
+  value       = azurerm_storage_account.ml.name
+}
+
+output "ml_key_vault_name" {
+  description = "Name of the ML Key Vault"
+  value       = azurerm_key_vault.ml.name
+}
+
+output "ml_application_insights_name" {
+  description = "Name of the ML Application Insights"
+  value       = azurerm_application_insights.ml.name
+}

@@ -57,3 +57,28 @@ variable "tags" {
     Project     = "Flask-CI-CD"
   }
 }
+
+# Azure ML variables
+variable "ml_workspace_name" {
+  description = "Name of the Azure ML workspace"
+  type        = string
+  default     = "ml-workspace-anomaly-detection"
+}
+
+variable "ml_storage_account_name" {
+  description = "Name of the storage account for ML workspace (lowercase, alphanumeric, 3-24 chars)"
+  type        = string
+  default     = "mlstorageanomalydet"
+}
+
+variable "ml_key_vault_name" {
+  description = "Name of the Key Vault for ML workspace (3-24 chars)"
+  type        = string
+  default     = "mlkv-anomaly-det"
+}
+
+variable "ml_application_insights_name" {
+  description = "Name of the Application Insights for ML workspace"
+  type        = string
+  default     = "ml-appinsights-anomaly"
+}

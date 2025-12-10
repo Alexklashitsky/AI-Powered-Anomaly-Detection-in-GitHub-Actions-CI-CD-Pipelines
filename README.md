@@ -10,6 +10,11 @@ A complete DevOps solution featuring a Flask web application with automated CI/C
 - **Azure App Service Plan**: Linux-based, Basic tier (B1)
 - **Azure App Service**: Container-based web app hosting
 - **Azure Storage Account**: Terraform remote state storage
+- **Azure Machine Learning Workspace**: ML workspace for anomaly detection
+  - Application Insights for monitoring
+  - Key Vault for secrets management
+  - Storage Account for ML artifacts
+  - Integration with ACR for model deployment
 
 ### CI/CD Pipelines
 1. **Terraform Infrastructure Deployment** (`.github/workflows/terraform-deploy.yml`)
@@ -22,6 +27,12 @@ A complete DevOps solution featuring a Flask web application with automated CI/C
    - Builds Docker images and pushes to ACR
    - Deploys to Azure App Service
    - Depends on Terraform workflow completion
+
+3. **ML Model Training** (`.github/workflows/train-ml-model.yml`)
+   - Trains Isolation Forest model for anomaly detection
+   - Analyzes CI/CD pipeline metrics (duration, failure rate)
+   - Registers model in Azure ML
+   - Runs weekly or on-demand
 
 ## 🚀 Features
 
@@ -163,7 +174,8 @@ app_service_plan_name = "flask-app-plan"
 ├── .github/
 │   └── workflows/
 │       ├── terraform-deploy.yml    # Infrastructure deployment
-│       └── ci-cd.yml               # Application CI/CD
+│       ├── ci-cd.yml               # Application CI/CD
+│       └── train-ml-model.yml      # ML model training
 ├── terraform/
 │   ├── main.tf                     # Provider and backend config
 │   ├── resources.tf                # Infrastructure resources
@@ -189,6 +201,11 @@ app_service_plan_name = "flask-app-plan"
 2. **Push to `main` with only app code changes:**
    ```
    CI/CD Workflow → Build & Test → Push to ACR → Deploy to existing App Service
+   ```
+
+3. **Manual trigger or scheduled run for ML model training:**
+   ```
+   ML Training Workflow → Trains model on Azure ML → Registers model in Azure ML
    ```
 
 ## 🧪 Local Development
