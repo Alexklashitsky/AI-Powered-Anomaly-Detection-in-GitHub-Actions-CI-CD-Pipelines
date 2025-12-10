@@ -68,37 +68,45 @@ resource "azurerm_machine_learning_workspace" "main" {
 # Data source to get current Azure config
 data "azurerm_client_config" "current" {}
 
-# Grant ML Workspace access to Key Vault
-resource "azurerm_key_vault_access_policy" "ml_workspace" {
-  key_vault_id = azurerm_key_vault.ml.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_machine_learning_workspace.main.identity[0].principal_id
-  
-  secret_permissions = [
-    "Get",
-    "List",
-    "Set",
-    "Delete"
-  ]
-  
-  key_permissions = [
-    "Get",
-    "List",
-    "Create",
-    "Delete"
-  ]
-}
+# Note: Access policies and role assignments commented out - requires special permissions
+# These are automatically created by Azure ML Workspace or can be created manually
+# 
+# Manual commands to run after deployment (if needed):
+# $ML_PRINCIPAL_ID = (az ml workspace show --name <workspace-name> --resource-group flask-app-rg --query identity.principalId -o tsv)
+# $STORAGE_ID = (az storage account show --name <storage-name> --resource-group flask-app-rg --query id -o tsv)
+# $ACR_ID = (az acr show --name <acr-name> --resource-group flask-app-rg --query id -o tsv)
+# az role assignment create --assignee $ML_PRINCIPAL_ID --role "Storage Blob Data Contributor" --scope $STORAGE_ID
+# az role assignment create --assignee $ML_PRINCIPAL_ID --role "AcrPull" --scope $ACR_ID
 
-# Grant ML Workspace access to Storage Account
-resource "azurerm_role_assignment" "ml_storage_blob_contributor" {
-  scope                = azurerm_storage_account.ml.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_machine_learning_workspace.main.identity[0].principal_id
-}
-
-# Grant ML Workspace access to ACR
-resource "azurerm_role_assignment" "ml_acr_pull" {
-  scope                = azurerm_container_registry.acr.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_machine_learning_workspace.main.identity[0].principal_id
-}
+# Uncomment these if your service principal has User Access Administrator role:
+# resource "azurerm_key_vault_access_policy" "ml_workspace" {
+#   key_vault_id = azurerm_key_vault.ml.id
+#   tenant_id    = data.azurerm_client_config.current.tenant_id
+#   object_id    = azurerm_machine_learning_workspace.main.identity[0].principal_id
+#   
+#   secret_permissions = [
+#     "Get",
+#     "List",
+#     "Set",
+#     "Delete"
+#   ]
+#   
+#   key_permissions = [
+#     "Get",
+#     "List",
+#     "Create",
+#     "Delete"
+#   ]
+# }
+# 
+# resource "azurerm_role_assignment" "ml_storage_blob_contributor" {
+#   scope                = azurerm_storage_account.ml.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = azurerm_machine_learning_workspace.main.identity[0].principal_id
+# }
+# 
+# resource "azurerm_role_assignment" "ml_acr_pull" {
+#   scope                = azurerm_container_registry.acr.id
+#   role_definition_name = "AcrPull"
+#   principal_id         = azurerm_machine_learning_workspace.main.identity[0].principal_id
+# }

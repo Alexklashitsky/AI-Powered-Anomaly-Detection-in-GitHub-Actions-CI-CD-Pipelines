@@ -54,32 +54,40 @@ See TERRAFORM_FIXES.md for details.
 
 ## Conventional Commit Format (Recommended)
 ```
-fix(terraform): resolve deployment errors with Function App and App Insights
+fix(terraform): resolve deployment errors and permission issues
 
-BREAKING CHANGE: Function App migrated from Consumption (Y1) to Basic (B1) plan
+BREAKING CHANGE: Manual post-deployment setup required for role assignments
 
 Fixed:
-- Function App deployment error: "Dynamic SKU, Linux Worker not available"
-- Application Insights error: "workspace_id can not be removed after set"
+- Function App deployment: "Dynamic SKU, Linux Worker not available"
+- Application Insights: "workspace_id can not be removed after set"
+- Role assignment authorization errors (requires User Access Administrator)
 
 Changed:
-- terraform/function_resources.tf: Y1 → B1 SKU
-- terraform/ml_resources.tf: Added azurerm_log_analytics_workspace
+- terraform/function_resources.tf: Y1 → B1 SKU, commented role assignments
+- terraform/ml_resources.tf: Added Log Analytics Workspace, commented role assignments
 - terraform/outputs.tf: Added workspace outputs
 
 Added:
-- TERRAFORM_FIXES.md: Detailed troubleshooting guide
+- PERMISSION_SETUP.md: Post-deployment permission configuration guide
+- post-deployment-setup.ps1: Automated permission setup script
+- TERRAFORM_FIXES.md: Detailed infrastructure troubleshooting
 - DEPLOYMENT_CHECKLIST.md: Step-by-step deployment guide
 - RESOLUTION_SUMMARY.md: Quick reference summary
+- COMMIT_MESSAGE.md: Git commit templates
 
 Updated:
-- PROJECT_STATUS.md: Reflect resolved issues
+- PROJECT_STATUS.md: Reflect all resolved issues
 - DOCUMENTATION_INDEX.md: Added new documentation
+
+Post-Deployment Required:
+Run .\post-deployment-setup.ps1 after terraform apply
+See PERMISSION_SETUP.md for details
 
 Cost Impact: +$12/month (B1 plan + Log Analytics)
 
 Closes #N/A
-Refs: Azure Function deployment issues
+Refs: Azure deployment and permission issues
 ```
 
 ## For GitHub PR Title

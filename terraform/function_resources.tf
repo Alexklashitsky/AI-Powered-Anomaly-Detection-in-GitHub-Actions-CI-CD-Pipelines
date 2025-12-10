@@ -65,16 +65,24 @@ resource "azurerm_linux_function_app" "anomaly_detector" {
   })
 }
 
-# Grant Function App access to ML Workspace
-resource "azurerm_role_assignment" "function_ml_reader" {
-  scope                = azurerm_machine_learning_workspace.main.id
-  role_definition_name = "Reader"
-  principal_id         = azurerm_linux_function_app.anomaly_detector.identity[0].principal_id
-}
+# Note: Role assignments commented out - requires User Access Administrator or Owner role
+# These can be created manually after deployment or by a user with sufficient permissions
+# 
+# Manual commands to run after deployment:
+# $FUNCTION_PRINCIPAL_ID = (az functionapp identity show --name <function-app-name> --resource-group flask-app-rg --query principalId -o tsv)
+# $ML_WORKSPACE_ID = (az ml workspace show --name <workspace-name> --resource-group flask-app-rg --query id -o tsv)
+# az role assignment create --assignee $FUNCTION_PRINCIPAL_ID --role "Reader" --scope $ML_WORKSPACE_ID
+# az role assignment create --assignee $FUNCTION_PRINCIPAL_ID --role "Monitoring Reader" --resource-group flask-app-rg
 
-# Grant Function App access to Monitor
-resource "azurerm_role_assignment" "function_monitoring_reader" {
-  scope                = azurerm_resource_group.main.id
-  role_definition_name = "Monitoring Reader"
-  principal_id         = azurerm_linux_function_app.anomaly_detector.identity[0].principal_id
-}
+# Uncomment these if your service principal has User Access Administrator role:
+# resource "azurerm_role_assignment" "function_ml_reader" {
+#   scope                = azurerm_machine_learning_workspace.main.id
+#   role_definition_name = "Reader"
+#   principal_id         = azurerm_linux_function_app.anomaly_detector.identity[0].principal_id
+# }
+# 
+# resource "azurerm_role_assignment" "function_monitoring_reader" {
+#   scope                = azurerm_resource_group.main.id
+#   role_definition_name = "Monitoring Reader"
+#   principal_id         = azurerm_linux_function_app.anomaly_detector.identity[0].principal_id
+# }
