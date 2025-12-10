@@ -25,14 +25,9 @@ variable "tenant_id" {
 
 # ACR variables
 variable "acr_name" {
-  description = "Name of the existing Azure Container Registry"
+  description = "Name of the Azure Container Registry to create"
   type        = string
   default     = "delekacr"
-}
-
-variable "acr_resource_group" {
-  description = "Resource group containing the existing ACR"
-  type        = string
 }
 
 # Infrastructure variables

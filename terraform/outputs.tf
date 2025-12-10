@@ -36,20 +36,32 @@ output "app_service_plan_id" {
   value       = azurerm_service_plan.main.id
 }
 
-# ACR outputs (from data source)
+# ACR outputs
 output "acr_login_server" {
   description = "Login server URL of the Azure Container Registry"
-  value       = data.azurerm_container_registry.acr.login_server
+  value       = azurerm_container_registry.acr.login_server
 }
 
 output "acr_name" {
   description = "Name of the Azure Container Registry"
-  value       = data.azurerm_container_registry.acr.name
+  value       = azurerm_container_registry.acr.name
 }
 
 output "acr_id" {
   description = "ID of the Azure Container Registry"
-  value       = data.azurerm_container_registry.acr.id
+  value       = azurerm_container_registry.acr.id
+}
+
+output "acr_admin_username" {
+  description = "Admin username for ACR"
+  value       = azurerm_container_registry.acr.admin_username
+  sensitive   = true
+}
+
+output "acr_admin_password" {
+  description = "Admin password for ACR"
+  value       = azurerm_container_registry.acr.admin_password
+  sensitive   = true
 }
 
 # Managed Identity outputs
